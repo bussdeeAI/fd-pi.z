@@ -59,6 +59,8 @@ services:
       WEATHER_LAT: ${WEATHER_LAT:-48.2082}
       WEATHER_LON: ${WEATHER_LON:-16.3738}
       WEATHER_TZ: ${WEATHER_TZ:-Europe/Vienna}
+      # Eigener Open-Meteo-Proxy? Steht in der .env (siehe .env.example).
+      OPEN_METEO_BASE: ${OPEN_METEO_BASE:-}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       # Leer = Musik aus. /app/audio schaltet sie an; der Ordner dahinter
       # steht in MUSIC_HOST_DIR (siehe unten).

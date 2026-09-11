@@ -12,6 +12,83 @@ Deshalb gibt es hier **keine 1.4.5**. Sie stand eine Weile in dieser Datei,
 wurde aber nie veröffentlicht: Auf GitHub steht v1.4.4, und der Pi läuft
 darauf. Was unter 1.4.5 gesammelt war, ist in 1.5.0 aufgegangen.
 
+## [1.7.0] — 2026-09-12
+
+### Hinzugefügt
+
+- **Kalender-Abonnements per URL.** Google, Apple und Outlook geben für jeden
+  Kalender eine iCal-Adresse; ab jetzt genügt es, sie einmal im Adminbereich
+  einzutragen. Das Dashboard holt den Kalender selbst — gleich nach dem
+  Anlegen und dann stündlich —, prüft, dass die Antwort wirklich ein Kalender
+  ist, und legt ihn als gewöhnliche `.ics`-Datei ab. Wer bisher Dateien von
+  Hand nach `data/ics/` kopiert hat, kann damit aufhören; was dort liegt,
+  wird weiter gelesen wie gehabt. Ein fehlschlagendes Abo bricht nichts ab:
+  Es zeigt seinen Fehler im Adminbereich an, der Rest der Familie bleibt
+  aktuell.
+
+- **Regenwahrscheinlichkeit in der Vorhersage.** Die Stundenwerte der
+  Wahrscheinlichkeit wurden schon geholt, aber nie angesehen. Jetzt färbt
+  sich die Kurve auf der Übersicht unter den kommende-Stunden-Balken nach
+  Regenwahrscheinlichkeit, die Wetterseite zeigt für jede der nächsten
+  zwölf Stunden Wahrscheinlichkeit und Menge, und die Tagesliste nennt
+  hinter dem Prozentwert auch die erwartete Menge und das Zeitfenster:
+  „82 % · 4,2 mm · 14:00–17:00 Uhr" statt eines nackten Werts.
+
+### Geändert
+
+- **Wetterdienst-Basisadresse konfigurierbar.** Über `OPEN_METEO_BASE` in der
+  `.env` lassen sich Vorhersage und Ortssuche an einen eigenen Open-Meteo-
+  Proxy oder eine selbst gehostete Instanz umziehen — praktisch für
+  Installationen ohne direkten Internetzugang oder mit eingerichtetem
+  Zwischenspeicher. Ohne die Variable bleibt es beim öffentlichen Dienst.
+
+- **Das Regenfenster hört auch auf die Wahrscheinlichkeit.** Bisher galt
+  eine Stunde erst als nass, wenn mindestens 0,1 mm vorhergesagt waren —
+  bei „60 % Regenwahrscheinlichkeit, 0,05 mm" meldete das Dashboard
+  trockenes Wetter. Jetzt zählt beides: ab 55 % gilt eine Stunde als
+  vermutlich nass. Der Satz am Bildschirmrand unterscheidet dazu nach
+  Sicherheit: „Regen ab 15:00" steht für ein Viertelstundenfenster oder
+  hohe Wahrscheinlichkeit, „Regen möglich ab 15:00 · 55 %" für eine
+  Schätzung. Auch der Wetter-Chip in der Kopfzeile nennt den Zeitpunkt,
+  wenn einer in Sicht ist.
+
+- **Kalender-Wiederholung „Jeden Tag".** Einmal täglich anstehen — etwa
+  für eine Dauerbaustelle oder eine Erinnerung — war bisher nur über
+  Umwege zu haben. Der Wert gehört jetzt neben einmalig, wöchentlich,
+  monatlich und jährlich.
+
+### Behoben
+
+- **Die Anmeldung hält auch im eingebetteten Rahmen.** Das Sitzungscookie
+  kam bisher mit `SameSite=Lax` daher; bettet jemand das Dashboard in einen
+  Rahmen ein — Vorschauen, Portal-Seiten, manche Startseiten —, behandeln
+  es die Browser als Drittkontext und werfen es still weg. Die Anmeldung
+  gelang, die nächste Anfrage war schon wieder abgemeldet. Über HTTPS
+  setzt das Dashboard das Cookie jetzt mit `SameSite=None; Secure` und dem
+  Partitioned-Attribut (CHIPS), erkannt am TLS-Sockel oder an
+  `X-Forwarded-Proto`; im Heimnetz über HTTP bleibt es beim sicheren Lax.
+
+- **Die Diashow behält ihre Adressleiste nicht mehr.** Der Diashow-Knopf
+  im Foto-Rahmen schaltet jetzt mit demselben Tipp in den echten Voll-
+  bildmodus (Fullscreen-API), und die Diashow selbst holt das Vollbild
+  nach, sobald der Bildschirm berührt wird. So verschwindet die Leiste
+  auch dann, wenn die Show nicht als installierte App läuft — etwa wenn
+  das Wandgerät nach fünf Minuten Ruhe von selbst hineinwechselt. Ein
+  kleiner Hinweis „Antippen für Vollbild" zeigt dort, wo die Geste hin
+  soll, und geht nach acht Sekunden weg.
+
+- **Das Bildschirm-Abschalten hört der Diashow nicht mehr zu.** Ein
+  Wake Lock hält das Display wach, solange die Show läuft; nach einem
+  Blick in eine andere App wird es erneuert, beim Verlassen freigegeben.
+  Geräte ohne Wake-Lock-Unterstützung fallen auf das gewohnte Verhalten
+  zurück.
+
+- **Fotos bleiben in der Diashow auch ohne Netz.** Der Zwischenspeicher
+  hält jetzt bis zu 400 Foto-Dateien vor (die Bildliste kam schon
+  vorher), damit ein Wi-Fi-Ausfall die Show nicht in einen schwarzen
+  Bildschirm fallen lässt. Ältere Bilder fallen bei mehr Bildern zuerst
+  aus dem Cache.
+
 ## [1.6.1] — 2026-09-10
 
 ### Behoben
